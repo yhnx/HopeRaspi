@@ -8,6 +8,8 @@ import board
 import busio
 import RPi.GPIO as GPIO
 
+
+
 def detect_ball_color():
     # Initialize camera
     cap = cv2.VideoCapture(0)
@@ -73,8 +75,6 @@ class PotatoServoController:
             self.elbow_servo = 15    # Elbow joint
             
             # Setup GPIO for suction
-            GPIO.setmode(GPIO.BCM)
-            GPIO.setwarnings(False)
             self.sucker_pin = 17
             GPIO.setup(self.sucker_pin, GPIO.OUT)
             GPIO.output(self.sucker_pin, GPIO.LOW)
@@ -132,52 +132,43 @@ class PotatoServoController:
         """Deactivate suction"""
         GPIO.output(self.sucker_pin, GPIO.LOW)
 
-    def move_to_home_position(self, speed=0.4):
+    def move_to_home_position(self, speed=0.6):
         """Return arm to home position"""
         self.turn_servo_to_angle_with_speed(self.elbow_servo, 180, speed)
-        time.sleep(0.3)
         self.turn_servo_to_angle_with_speed(self.shoulder_servo, 100, speed)
-        time.sleep(0.3)
         self.turn_servo_to_angle_with_speed(self.base_servo, 180, speed)
 
-    def position_arm(self, base_angle, shoulder_angle, elbow_angle, speed=0.3):
+    def position_arm(self, base_angle, shoulder_angle, elbow_angle, speed=0.6):
         """Position all arm servos"""
         self.turn_servo_to_angle_with_speed(self.base_servo, base_angle, speed)
-        time.sleep(0.2)
-        self.turn_servo_to_angle_with_speed(self.elbow_servo, elbow_angle, speed)
-        time.sleep(0.5)
         self.turn_servo_to_angle_with_speed(self.shoulder_servo, shoulder_angle, speed)
-        time.sleep(0.5)
+        self.turn_servo_to_angle_with_speed(self.elbow_servo, elbow_angle, speed)
 
     def take_potato_right(self):
         """Pick up potato from right position"""
-        print("Taking potato from right...")
-        self.position_arm(base_angle=70, shoulder_angle=60, elbow_angle=100, speed=0.4)
-        time.sleep(0.5)
-        self.position_arm(base_angle=70, shoulder_angle=7, elbow_angle=13, speed=0.3)
-        time.sleep(0.5)
+        print("\n----- TAKING POTATO FROM RIGHT -----")
+        self.position_arm(base_angle=60, shoulder_angle=60, elbow_angle=13, speed=0.7)
+        time.sleep(0.2)
+        self.position_arm(base_angle=60, shoulder_angle=7, elbow_angle=13, speed=0.6)
+        time.sleep(0.2)
         self.sucker_on()
-        time.sleep(1)
-        self.position_arm(base_angle=70, shoulder_angle=60, elbow_angle=100, speed=0.3)
+        time.sleep(3)
+        self.position_arm(base_angle=60, shoulder_angle=60, elbow_angle=13, speed=0.7)
 
     def place_potato_orange(self):
         """Place potato in orange container"""
-        print("Placing in orange container...")
-        self.position_arm(base_angle=5, shoulder_angle=100, elbow_angle=100, speed=0.4)
-        time.sleep(0.3)
-        self.position_arm(base_angle=5, shoulder_angle=126, elbow_angle=0, speed=0.3)
-        time.sleep(0.5)
+        print("\n----- PLACING POTATO IN ORANGE CONTAINER -----")
+        self.position_arm(base_angle=5, shoulder_angle=126, elbow_angle=0, speed=0.6)
+        time.sleep(0.2)
         self.sucker_off()
         time.sleep(3)
         self.move_to_home_position()
 
     def place_potato_white(self):
         """Place potato in white container"""
-        print("Placing in white container...")
-        self.position_arm(base_angle=150, shoulder_angle=100, elbow_angle=100, speed=0.4)
-        time.sleep(0.3)
-        self.position_arm(base_angle=150, shoulder_angle=85, elbow_angle=180, speed=0.3)
-        time.sleep(0.5)
+        print("\n----- PLACING POTATO IN WHITE CONTAINER -----")
+        self.position_arm(base_angle=150, shoulder_angle=85, elbow_angle=180, speed=0.6)
+        time.sleep(0.2)
         self.sucker_off()
         time.sleep(3)
         self.move_to_home_position()
@@ -186,30 +177,40 @@ class PotatoServoController:
         """Clean up resources"""
         try:
             GPIO.output(self.sucker_pin, GPIO.LOW)
-            GPIO.cleanup()
             print("GPIO cleaned up")
         except:
             pass
 
 if __name__ == '__main__':
-    result = detect_ball_color()
-    print(f"Detected color: {result}")
-    
     try:
+       
+        
+        # Detect ball color
+        result = detect_ball_color()
+        print(f"Detected color: {result}")
+        
         controller = PotatoServoController()
         
         if result == "orange":
+            
             controller.take_potato_right()
-            time.sleep(1)
+            
+            time.sleep(0.5)
             controller.place_potato_orange()
         else:
+            
             controller.take_potato_right()
-            time.sleep(1)
+            
+            time.sleep(0.5)
             controller.place_potato_white()
             
+    except KeyboardInterrupt:
+        print("\nProgram interrupted by user")
     except Exception as e:
         print(f"Error: {e}")
     finally:
         if 'controller' in locals():
             controller.cleanup()
+        
+        GPIO.cleanup()
         print("Program ended")
