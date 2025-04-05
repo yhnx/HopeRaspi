@@ -233,6 +233,8 @@ class PotatoServoController:
         self.position_arm(base_angle=20, shoulder_angle=70, elbow_angle=90, speed=0.3)
         
         print("Potato successfully taken from front position")
+
+        
     def take_potato_right(self):
         """Sequence to take a potato from the right position"""
         print("\n----- TAKING POTATO FROM RIGHT -----")
@@ -275,11 +277,11 @@ class PotatoServoController:
         
         print("Potato successfully taken from left position")
         
-    def place_potato_yellow(self):
-        """Sequence to place a potato in the yellow container"""
-        print("\n----- PLACING POTATO IN YELLOW CONTAINER -----")
+    def place_potato_orange(self):
+        """Sequence to place a potato in the orange container"""
+        print("\n----- PLACING POTATO IN orange CONTAINER -----")
         
-        # Position arm over yellow container
+        # Position arm over orange container
         self.position_arm(base_angle=0, shoulder_angle=80, elbow_angle=90, speed=0.4)
         time.sleep(0.5)
         
@@ -297,7 +299,7 @@ class PotatoServoController:
         # Return to home position
         self.move_to_home_position()
         
-        print("Potato successfully placed in yellow container")
+        print("Potato successfully placed in orange container")
     def place_potato_white(self):
         """Sequence to place a potato in the right container"""
         print("\n----- PLACING POTATO IN RIGHT CONTAINER -----")
@@ -355,7 +357,7 @@ class PotatoServoController:
             # Demo each sequence
             self.take_potato_front()
             time.sleep(1)
-            self.place_potato_yellow()
+            self.place_potato_orange()
             time.sleep(1)
             
             self.take_potato_right()
@@ -365,7 +367,7 @@ class PotatoServoController:
             
             self.take_potato_left()
             time.sleep(1)
-            self.place_potato_yellow()
+            self.place_potato_orange()
             
             print("\nDemonstration complete")
             
@@ -385,12 +387,21 @@ if __name__ == '__main__':
         controller = PotatoServoController()
         
         # Run the demo to test all functions
-        controller.demo()
+        #controller.demo()
+
+        if result == "orange":
+            controller.take_potato_right()
+            time.sleep(1)
+            controller.place_potato_orange()
+        else:
+            controller.take_potato_right()
+            time.sleep(1)
+            controller.place_potato_white()
         
         # Alternatively, you can uncomment to run individual commands:
         # controller.take_potato_front()
         # time.sleep(1)
-        # controller.place_potato_yellow()
+        # controller.place_potato_orange()
         
     except Exception as e:
         print(f"Error running program: {e}")

@@ -21,7 +21,7 @@ class RaspberryPiController:
                         self.ser.write(b"OK\n")
                         
                     elif command == "IS_RED_GOOD":
-                        result = self._run_python_script("is_red_good.py")
+                        result = str(self._run_python_script("is_red_good.py"))
                         self.ser.write(f"RESULT:{result}\n".encode())
                         
                     elif command == "FIND_BOX_COLOR":
@@ -31,6 +31,22 @@ class RaspberryPiController:
                     elif command.startswith("OPEN_GATE:"):
                         value = float(command.split(':')[1])
                         self._run_python_script("open_gate.py", str(value))
+                        self.ser.write(b"OK\n")
+
+                    elif command == "TAKE_RIGHT_BOX":
+                        self._run_python_script("take_right_box.py")
+                        self.ser.write(b"OK\n")
+
+                    elif command == "TAKE_FRONT_BOX":
+                        self._run_python_script("take_front_box.py")
+                        self.ser.write(b"OK\n")
+
+                    elif command == "PLACE_RIGHT_BOX":
+                        self._run_python_script("play_right_box.py")
+                        self.ser.write(b"OK\n")
+
+                    elif command == "PLACE_FRONT_BOX":
+                        self._run_python_script("play_front_box.py")
                         self.ser.write(b"OK\n")
                         
                     elif command == "DETECT_DRY_POT":
@@ -49,11 +65,6 @@ class RaspberryPiController:
                         self._run_python_script("play_starman.py")
                         self.ser.write(b"OK\n")
                         
-                    elif command == "LED_ON":
-                        self.ser.write(b"OK\n")
-                        
-                    elif command == "LED_OFF":
-                        self.ser.write(b"OK\n")
                         
                     else:
                         self.ser.write(b"ERROR: Unknown command\n")

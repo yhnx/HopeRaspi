@@ -22,7 +22,7 @@ def detect_boxes():
     BLUE_UPPER = np.array([130, 255, 255])
     
     start_time = time.time()
-    result = "null"
+    result = -1
     
     try:
         while time.time() - start_time < 3:  # Run for 3 seconds
@@ -45,15 +45,15 @@ def detect_boxes():
             for cnt in red_contours:
                 area = cv2.contourArea(cnt)
                 if MIN_BOX_AREA < area < MAX_BOX_AREA:
-                    result = "red"
+                    result = 1
                     break
             
             # Check blue contours if red not found
-            if result != "red":
+            if result != 1:
                 for cnt in blue_contours:
                     area = cv2.contourArea(cnt)
                     if MIN_BOX_AREA < area < MAX_BOX_AREA:
-                        result = "blue"
+                        result = 0
                         break
     
     finally:
